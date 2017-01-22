@@ -1,0 +1,27 @@
+{
+  "name": "jedit",
+  "version": "0.0.1",
+  "description": "",
+  "preferGlobal": true,
+  "bin": {
+    "jedit": "./lib/jedit.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup src/main.js -o lib/_jedit.js && set +H;(echo \"#!/usr/bin/env node\"; cat lib/_jedit.js) > lib/jedit.js; set -H && rm lib/_jedit.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://pandanoir@github.com/pandanoir/twitter.js.git"
+  },
+  "keywords": [],
+  "author": "Naoto Ikuno <moon_in_france@yahoo.co.jp>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pandanoir/twitter.js/issues"
+  },
+  "homepage": "https://github.com/pandanoir/twitter.js#readme",
+  "devDependencies": {
+    "rollup": "0.41.4"
+  }
+}
