@@ -58,6 +58,19 @@ const nmap = {
         cursor.x = 0;
         mode = INSERT_MODE;
     },
+    'I': () => {
+        cursor.x = 0;
+        mode = INSERT_MODE;
+    },
+    'A': () => {
+        cursor.x = lines[cursor.y].length;
+        mode = INSERT_MODE;
+    },
+    'O': () => {
+        lines.splice(cursor.y, 0, '');
+        cursor.x = 0;
+        mode = INSERT_MODE;
+    },
     'q': () => {
         clearScreen();
         process.exit();
