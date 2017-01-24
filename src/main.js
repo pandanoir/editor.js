@@ -5,6 +5,7 @@ let mode = NORMAL_MODE;
 let lines = [''];
 let filename = '';
 const cursor = {x: 0, y: 0};
+const getStatuslineText = () => `${['normal', 'insert', 'command'][mode]} [${filename === '' ? 'new file' : filename}] ${lines.length}lines scroll: (${scroll.x}, ${scroll.y}) cursor: (${cursor.x}, ${cursor.y})`;
 
 
 }
@@ -124,7 +125,7 @@ stdin.on('data', key => {
     clearScreen();
     setStyle();
     writeLines(lines, cursor);
-    writeStatusLine(`${['normal', 'insert', 'command'][mode]} [${filename === '' ? 'new file' : filename}]`);
+    writeStatusLine(getStatuslineText());
     setTimeout(() =>{
         process.stdout.uncork();
     }, 1000/32);
@@ -135,5 +136,5 @@ let count = 0;
 process.stdout.cork();
 setStyle();
 writeLines(lines, cursor);
-writeStatusLine(`${['normal', 'insert', 'command'][mode]} [${filename === '' ? 'new file' : filename}]`);
+writeStatusLine(getStatuslineText());
 process.stdout.uncork();
