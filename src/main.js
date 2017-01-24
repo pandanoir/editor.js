@@ -3,11 +3,29 @@ const NORMAL_MODE = 0, INSERT_MODE = 1, COMMAND_MODE = 2;
 const stdin = process.stdin;
 let mode = NORMAL_MODE;
 let lines = [''];
-let filename = '';
+let filename = process.argv[2] || '';
 const cursor = {x: 0, y: 0};
 const getStatuslineText = () => `${['normal', 'insert', 'command'][mode]} [${filename === '' ? 'new file' : filename}] ${lines.length}lines scroll: (${scroll.x}, ${scroll.y}) cursor: (${cursor.x}, ${cursor.y})`;
 
 
+if (filename != '') {
+    const fs = require('fs');
+    fs.readFile(filename, 'utf-8', (err, data) => {
+        if (err) {
+            console.log(err);
+            process.exit(1);
+        }
+        lines = data.split('\n');
+        if (lines.length >= 2) lines.pop(); // last is empty line.
+        process.stdout.cork();
+        clearScreen();
+        setStyle();
+        writeLines(lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
+        writeStatusLine(getStatuslineText());
+        setTimeout(() =>{
+            process.stdout.uncork();
+        }, 1000/32);
+    });
 }
 const DEFAULT_KEY = 'default_key_mapping';
 const ESCAPE_KEY = '\u001b';
