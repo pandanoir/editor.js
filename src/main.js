@@ -1,4 +1,4 @@
-import {clearScreen, writeStatusLine, writeLines, setCursorStyle, setStyle} from './render.js';
+import {clearScreen, writeStatusLine, writeLines, setCursorStyle, setStyle} from './tategakirender.js';
 const NORMAL_MODE = 0, INSERT_MODE = 1, COMMAND_MODE = 2;
 const stdin = process.stdin;
 
