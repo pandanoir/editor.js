@@ -23,5 +23,8 @@
   "homepage": "https://github.com/pandanoir/twitter.js#readme",
   "devDependencies": {
     "rollup": "0.41.4"
+  },
+  "dependencies": {
+    "eastasianwidth": "0.1.1"
   }
 }
