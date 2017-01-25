@@ -1,10 +1,12 @@
 import {clearScreen, writeStatusLine, writeLines, setCursorStyle, setStyle} from './render.js';
 const NORMAL_MODE = 0, INSERT_MODE = 1, COMMAND_MODE = 2;
 const stdin = process.stdin;
+
 let mode = NORMAL_MODE;
 let lines = [''];
 let filename = process.argv[2] || '';
 const cursor = {x: 0, y: 0};
+const scroll = {x: 0, y: 0};
 const getStatuslineText = () => `${['normal', 'insert', 'command'][mode]} [${filename === '' ? 'new file' : filename}] ${lines.length}lines scroll: (${scroll.x}, ${scroll.y}) cursor: (${cursor.x}, ${cursor.y})`;
 
 
@@ -103,11 +105,14 @@ const nmap = {
         cursor.y++;
         cursor.y = Math.max(Math.min(lines.length - 1, cursor.y), 0);
         cursor.x = Math.max(Math.min(lines[cursor.y].length - 1, cursor.x), 0);
+        const columns = process.stdout.columns - 1;
+        if (lines.length >= scroll.y + 1 + columns && cursor.y >=  scroll.y + columns - 10) scroll.y++;
     },
     'k': () => {
         cursor.y--;
         cursor.y = Math.max(Math.min(lines.length - 1, cursor.y), 0);
         cursor.x = Math.max(Math.min(lines[cursor.y].length - 1, cursor.x), 0);
+        if (scroll.y - 1 >= 0 && scroll.y + 10 >= cursor.y) scroll.y--;
     },
     'l': () => {
         cursor.x++;
@@ -142,7 +147,7 @@ stdin.on('data', key => {
     process.stdout.cork();
     clearScreen();
     setStyle();
-    writeLines(lines, cursor);
+    writeLines(lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
     writeStatusLine(getStatuslineText());
     setTimeout(() =>{
         process.stdout.uncork();
@@ -153,6 +158,6 @@ const tweetBody = process.argv[2];
 let count = 0;
 process.stdout.cork();
 setStyle();
-writeLines(lines, cursor);
+writeLines(lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
 writeStatusLine(getStatuslineText());
 process.stdout.uncork();
