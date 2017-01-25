@@ -123,6 +123,12 @@ const nmap = {
         mode = COMMAND_MODE;
     }
 };
+const nnoremap = {
+    'k': nmap['h'],
+    'h': nmap['j'],
+    'l': nmap['k'],
+    'j': nmap['l']
+};
 const cmap = {
     [ESCAPE_KEY]: () => {
         mode = NORMAL_MODE;
@@ -140,7 +146,8 @@ stdin.on('data', key => {
         if (imap[key]) imap[key]();
         else imap[DEFAULT_KEY](key);
     } else if (mode === NORMAL_MODE) {
-        if (nmap[key]) nmap[key]();
+        if (nnoremap[key]) nnoremap[key]();
+        else if (nmap[key]) nmap[key]();
     } else if (mode === COMMAND_MODE) {
         if (cmap[key]) cmap[key]();
     }
