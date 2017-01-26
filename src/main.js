@@ -142,15 +142,15 @@ stdin.resume();
 stdin.setEncoding('utf-8');
 stdin.on('data', key => {
     if (key === '\u0003') process.exit();
-    if (mode === INSERT_MODE) {
-        if (imap[key]) imap[key]();
-        else imap[DEFAULT_KEY](key);
-    } else if (mode === NORMAL_MODE) {
-        if (nnoremap[key]) nnoremap[key]();
-        else if (nmap[key]) nmap[key]();
-    } else if (mode === COMMAND_MODE) {
-        if (cmap[key]) cmap[key]();
+    const map = {
+        [NORMAL_MODE]: [nnoremap, nmap],
+        [INSERT_MODE]: [inoremap, imap],
+        [COMMAND_MODE]: [cnoremap, cmap],
     }
+    if (map[mode][0][key]) map[mode][0][key]();
+    else if (map[mode][1][key]) map[mode][1][key]();
+    else map[mode][1][DEFAULT_KEY](key);
+
     process.stdout.cork();
     clearScreen();
     setStyle();
