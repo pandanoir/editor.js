@@ -24,6 +24,7 @@ if (filename != '') {
         setStyle();
         writeLines(lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
         writeStatusLine(getStatuslineText());
+        writeCommandLine(State.commandLineText);
         setTimeout(() =>{
             process.stdout.uncork();
         }, 1000/32);
@@ -156,6 +157,7 @@ stdin.on('data', key => {
     setStyle();
     writeLines(lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
     writeStatusLine(getStatuslineText());
+    writeCommandLine(State.commandLineText);
     setTimeout(() =>{
         process.stdout.uncork();
     }, 1000/32);
@@ -167,4 +169,5 @@ process.stdout.cork();
 setStyle();
 writeLines(lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
 writeStatusLine(getStatuslineText());
+writeCommandLine(State.commandLineText);
 process.stdout.uncork();

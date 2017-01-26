@@ -1,4 +1,5 @@
 import {NORMAL_MODE} from './mode.js';
 export default {
-    mode: NORMAL_MODE
+    mode: NORMAL_MODE,
+    commandLineText: ''
 };

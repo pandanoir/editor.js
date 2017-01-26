@@ -20,8 +20,17 @@ export const writeStatusLine = (line) => {
         ' '.repeat(columns - line.length)
     );
 };
+export const writeCommandLine = (commandLine) => {
+    const write = process.stdout.write.bind(process.stdout);
+    const columns = process.stdout.columns;
+    setStyle();
+    write(
+        commandLine +
+        ' '.repeat(columns - commandLine.length)
+    );
+};
 export const writeLines = (lines, _relativeCursor) => {
-    const rows = process.stdout.rows - 1, // keep lines for header and footer
+    const rows = process.stdout.rows - 2, // keep lines for header and footer
         columns = process.stdout.columns;
     const relativeCursor = {
         tate: _relativeCursor.x,
