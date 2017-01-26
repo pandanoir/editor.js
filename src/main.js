@@ -1,13 +1,13 @@
-import {clearScreen, writeStatusLine, writeLines, setCursorStyle, setStyle} from './tategakirender.js';
-const NORMAL_MODE = 0, INSERT_MODE = 1, COMMAND_MODE = 2;
+import {clearScreen, writeStatusLine, writeCommandLine, writeLines, setCursorStyle, setStyle} from './tategakirender.js';
+import {NORMAL_MODE, INSERT_MODE, COMMAND_MODE} from './mode.js';
+import State from './state.js';
 const stdin = process.stdin;
 
-let mode = NORMAL_MODE;
 let lines = [''];
 let filename = process.argv[2] || '';
 const cursor = {x: 0, y: 0};
 const scroll = {x: 0, y: 0};
-const getStatuslineText = () => `${['normal', 'insert', 'command'][mode]} [${filename === '' ? 'new file' : filename}] ${lines.length}lines scroll: (${scroll.x}, ${scroll.y}) cursor: (${cursor.x}, ${cursor.y})`;
+const getStatuslineText = () => `${['normal', 'insert', 'command'][State.mode]} [${filename === '' ? 'new file' : filename}] ${lines.length}lines scroll: (${scroll.x}, ${scroll.y}) cursor: (${cursor.x}, ${cursor.y})`;
 
 
 if (filename != '') {
@@ -37,7 +37,7 @@ const BACKSPACE_KEY = '\u007f';
 const imap = {
     [ESCAPE_KEY]: () => {
             // esc
-            mode = NORMAL_MODE;
+            State.mode = NORMAL_MODE;
             cursor.x--;
             if (cursor.x < 0) cursor.x = 0;
     },
@@ -68,29 +68,29 @@ const imap = {
 }
 const nmap = {
     'i': () => {
-        mode = INSERT_MODE;
+        State.mode = INSERT_MODE;
     },
     'a': () => {
-        cursor.x++; mode = INSERT_MODE;
+        cursor.x++; State.mode = INSERT_MODE;
     },
     'o': () => {
         lines.splice(cursor.y + 1, 0, '');
         cursor.y++;
         cursor.x = 0;
-        mode = INSERT_MODE;
+        State.mode = INSERT_MODE;
     },
     'I': () => {
         cursor.x = 0;
-        mode = INSERT_MODE;
+        State.mode = INSERT_MODE;
     },
     'A': () => {
         cursor.x = lines[cursor.y].length;
-        mode = INSERT_MODE;
+        State.mode = INSERT_MODE;
     },
     'O': () => {
         lines.splice(cursor.y, 0, '');
         cursor.x = 0;
-        mode = INSERT_MODE;
+        State.mode = INSERT_MODE;
     },
     'q': () => {
         clearScreen();
@@ -120,8 +120,8 @@ const nmap = {
         cursor.x = Math.max(Math.min(lines[cursor.y].length - 1, cursor.x), 0);
     },
     ':': () =>  {
-        mode = COMMAND_MODE;
     }
+        State.mode = COMMAND_MODE;
 };
 const nnoremap = {
     'k': nmap['h'],
@@ -131,7 +131,7 @@ const nnoremap = {
 };
 const cmap = {
     [ESCAPE_KEY]: () => {
-        mode = NORMAL_MODE;
+        State.mode = NORMAL_MODE;
         cursor.x--;
         if (cursor.x < 0) cursor.x = 0;
     }

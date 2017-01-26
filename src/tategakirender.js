@@ -1,3 +1,6 @@
+import {NORMAL_MODE, INSERT_MODE, COMMAND_MODE} from './mode.js';
+import State from './state.js';
+
 const eaw = require('eastasianwidth');
 export const clearScreen = () => {
     const rows = process.stdout.rows;
@@ -42,7 +45,9 @@ export const writeLines = (lines, _relativeCursor) => {
     for (let i = 0; i < rows; i++) {
         process.stdout.write(' '.repeat(columns - lineSum));
         for (let j = lastLine - 1; j >= 0; j--) {
-            if (relativeCursor.tate === i && relativeCursor.yoko === j) setCursorStyle();
+            if ((INSERT_MODE === State.mode || NORMAL_MODE === State.mode) &&
+                relativeCursor.tate === i &&
+                relativeCursor.yoko === j) setCursorStyle();
             if (i >= lines[j].length) {
                 process.stdout.write(' '.repeat(lineWidth[j]));
             } else {
