@@ -39,10 +39,10 @@ const moveCursor = (dx, dy) => {
 
 export const imap = {
     [ESCAPE_KEY]: () => {
-            // esc
-            State.mode = NORMAL_MODE;
-            cursor.x--;
-            if (cursor.x < 0) cursor.x = 0;
+        // esc
+        State.mode = NORMAL_MODE;
+        cursor.x--;
+        if (cursor.x < 0) cursor.x = 0;
     },
     [ENTER_KEY]: () => {
         State.lines = State.lines.slice(0, cursor.y + 1).concat([State.lines[cursor.y].slice(cursor.x)]).concat(State.lines.slice(cursor.y + 1));
