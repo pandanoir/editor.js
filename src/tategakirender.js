@@ -29,7 +29,7 @@ export const writeCommandLine = (commandLine) => {
         ' '.repeat(columns - commandLine.length)
     );
 };
-export const writeLines = (lines, _relativeCursor) => {
+export const writeLines = (_lines, _relativeCursor) => {
     const rows = process.stdout.rows - 2, // keep lines for header and footer
         columns = process.stdout.columns;
     const relativeCursor = {
@@ -37,20 +37,24 @@ export const writeLines = (lines, _relativeCursor) => {
         yoko: _relativeCursor.y
     };
 
-    lines = lines.slice(0, columns).map(line => [...line].slice(0, rows));
+    _lines = _lines.slice(State.scroll.y, State.scroll.y + columns);
+    const lines = _lines.map(line => [...line].slice(State.scroll.x, State.scroll.x + rows));
+
     const displayLines = [...Array(rows)].map(_ => Array(columns).fill(''));
     const lineWidth = [...Array(columns)].fill(0);
-    for (let i = 0, _i = Math.min(columns, lines.length); i < _i; i++) {
+    let lastLine = -1, lineSum = 0;
+
+    for (let i = 0, _i = Math.min(columns, _lines.length); i < _i; i++) {
         lineWidth[i] = 1;
-        for (let j = 0, _j = Math.min(rows, lines[i].length); j < _j; j++) {
-            lineWidth[i] = Math.max(lineWidth[i], eaw.characterLength(lines[i][j]));
+        for (let j = 0, _j = _lines[i].length; j < _j; j++) {
+            lineWidth[i] = Math.max(lineWidth[i], eaw.characterLength(_lines[i][j]));
+        }
+        if (lastLine == -1) {
+            if (lineSum + lineWidth[i] > columns) lastLine = i;
+            else lineSum += lineWidth[i];
         }
     }
-    let lastLine = 0, lineSum = 0;
-    for (let _i = Math.min(columns, lines.length); lastLine < _i; lastLine++) {
-        if (lineSum + lineWidth[lastLine] > columns) break;
-        lineSum += lineWidth[lastLine];
-    }
+    if (lastLine == -1) lastLine = Math.min(columns, lines.length);
     for (let i = 0; i < rows; i++) {
         process.stdout.write(' '.repeat(columns - lineSum));
         for (let j = lastLine - 1; j >= 0; j--) {

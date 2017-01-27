@@ -49,7 +49,7 @@ stdin.on('data', key => {
     process.stdout.cork();
     clearScreen();
     setStyle();
-    writeLines(State.lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
+    writeLines(State.lines, {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
     writeStatusLine(getStatuslineText());
     writeCommandLine(State.commandLineText);
     setTimeout(() =>{
@@ -61,7 +61,7 @@ const tweetBody = process.argv[2];
 let count = 0;
 process.stdout.cork();
 setStyle();
-writeLines(State.lines.slice(scroll.y), {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
+writeLines(State.lines, {x: cursor.x - scroll.x, y: cursor.y - scroll.y});
 writeStatusLine(getStatuslineText());
 writeCommandLine(State.commandLineText);
 process.stdout.uncork();
