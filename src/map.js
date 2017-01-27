@@ -6,6 +6,37 @@ import State from './state.js';
 const cursor = State.cursor;
 const scroll = State.scroll;
 
+const range = (x, min, max) => {
+    return Math.max(Math.min(x, max), min);
+};
+const moveCursor = (dx, dy) => {
+    const repeater = parseInt(State.commandRepeater || '1', 10);
+    if (State.commandRepeater != '') {
+        dx *= repeater;
+        dy *= repeater;
+    }
+    if (State.nextCommand != '' && commands[State.nextCommand]) commands[State.nextCommand](cursor.x, cursor.y, dx, dy);
+    cursor.y = range(cursor.y + dy, 0, State.lines.length - 1);
+    cursor.x = range(cursor.x + dx, 0, State.lines[cursor.y].length - 1);
+
+    const rows = process.stdout.rows - 1;
+    const columns = process.stdout.columns - 1;
+    const scrollLimit = 10;
+    if (repeater >= 50) {
+        scroll.x = cursor.x - Math.floor(rows / 2);
+        scroll.y = cursor.y - Math.floor(columns / 2);
+    } else {
+        if (cursor.x >= scroll.x + rows - scrollLimit) scroll.x = cursor.x - (rows - scrollLimit);
+        else if (scroll.x + scrollLimit >= cursor.x) scroll.x = cursor.x - scrollLimit;
+
+        if (cursor.y >= scroll.y + columns - scrollLimit) scroll.y = cursor.y - (columns - scrollLimit);
+        else if (scroll.y + scrollLimit >= cursor.y) scroll.y = cursor.y - scrollLimit;
+    }
+    scroll.y = range(scroll.y, 0, State.lines.length - 1 - (columns - scrollLimit));
+    scroll.x = range(scroll.x, 0, State.lines[cursor.y].length - 1 - (rows - scrollLimit));
+    State.commandRepeater = '';
+}
+
 export const imap = {
     [ESCAPE_KEY]: () => {
             // esc
@@ -70,27 +101,16 @@ export const nmap = {
         process.exit();
     },
     'h': () => {
-        cursor.x--;
-        cursor.y = Math.max(Math.min(State.lines.length - 1, cursor.y), 0);
-        cursor.x = Math.max(Math.min(State.lines[cursor.y].length - 1, cursor.x), 0);
+        moveCursor(-1, 0);
     },
     'j': () => {
-        cursor.y++;
-        cursor.y = Math.max(Math.min(State.lines.length - 1, cursor.y), 0);
-        cursor.x = Math.max(Math.min(State.lines[cursor.y].length - 1, cursor.x), 0);
-        const columns = process.stdout.columns - 1;
-        if (State.lines.length >= scroll.y + 1 + columns && cursor.y >=  scroll.y + columns - 10) scroll.y++;
+        moveCursor(0, 1);
     },
     'k': () => {
-        cursor.y--;
-        cursor.y = Math.max(Math.min(State.lines.length - 1, cursor.y), 0);
-        cursor.x = Math.max(Math.min(State.lines[cursor.y].length - 1, cursor.x), 0);
-        if (scroll.y - 1 >= 0 && scroll.y + 10 >= cursor.y) scroll.y--;
+        moveCursor(0, -1);
     },
     'l': () => {
-        cursor.x++;
-        cursor.y = Math.max(Math.min(State.lines.length - 1, cursor.y), 0);
-        cursor.x = Math.max(Math.min(State.lines[cursor.y].length - 1, cursor.x), 0);
+        moveCursor(1, 0);
     },
     ':': () =>  {
         State.mode = COMMAND_MODE;
