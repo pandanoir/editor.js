@@ -98,6 +98,11 @@ export const nmap = {
     },
     [DEFAULT_KEY]: () => {}
 };
+for (let i = 1; i <= 9; i++) {
+    nmap[`${i}`] = () => {
+        State.commandRepeater += i;
+    };
+}
 export const nnoremap = {
     'k': nmap['h'],
     'h': nmap['j'],
